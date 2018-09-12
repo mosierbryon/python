@@ -2,7 +2,7 @@
 """
 Created on Wed Sep  5 18:08:37 2018
 
-@author: a23660
+@author: Bryon Mosier
 """
 
 import glob
