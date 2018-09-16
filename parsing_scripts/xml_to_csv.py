@@ -12,34 +12,36 @@ import xml.etree.ElementTree as ET
 
 ###############################################################################
 
-# def for looping through xml files
-    # path need to be set to whatever folder ends up being the
+# def for looping through and parsing xml files
+    # path need to be set to whatever folder ends up containing the xml files
     # this function will not collect text between oprning and closing element tags - only values tied to attributes inside the elements
 def xmlCC(path='H:/Performance Analytics/CC*.xml'):
     # read in files into a list
     xmlList = [open(filename).read() for filename in glob.glob(path)] 
     # create empty list to house roots of each xml file
     roots = []
-    for i in xmlList:
-        roots += [ET.XML(i)]
-    
+    for file in xmlList:
+        roots += [ET.XML(file)]
+    # concatData stores a list of 1 row DataFrames where length of the list equals the number of files read in from path
     concatData = []
     for aroot in roots:
-    
+        
+        # pairs is a list of element tags and attributes from a single xml file
+        # some of the pairs are actually dictionaries
         pairs = []
         for child in aroot.iter():
             pairs += [child.tag, child.attrib]
     
         # loop to convert dicts in lists
         cleaned = []
-        for i in pairs:
-            if type(i)==str:
-                cleaned.append([i])
+        for pair in pairs:
+            if type(pair)==str:
+                cleaned.append([pair])
     
-            elif type(i)==dict:
-                for k,v in i.items():
+            elif type(pair)==dict:
+                for key,value in pair.items():
                     
-                    cleaned.append([k,v])
+                    cleaned.append([key,value])
                     #print('dictionary!!')
             else:
                 print('Something bad happened')
@@ -54,7 +56,7 @@ def xmlCC(path='H:/Performance Analytics/CC*.xml'):
         # append cleaned_DF_T to concatData while removing row 0
         concatData += [cleaned_DF_T.reindex(cleaned_DF_T.index.drop(0))]       
     
-    # concatenate rows from 
+    # concatenate rows from concatData
     woohoo = pd.concat(concatData, axis=0)
     return woohoo
 
